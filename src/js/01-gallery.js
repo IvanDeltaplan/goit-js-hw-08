@@ -25,10 +25,10 @@ const galleryStr = galleryItems
   })
   .join("");
 
-galleryGrid.addEventListener("click", onClick);
-function onClick(event) {
-  event.preventDefault();
-}
+// galleryGrid.addEventListener("click", onClick);
+// function onClick(event) {
+//   event.preventDefault();
+// }
 galleryGrid.insertAdjacentHTML("beforeend", galleryStr);
 
 // let gallery = new SimpleLightbox(".gallery a");

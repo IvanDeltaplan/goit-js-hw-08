@@ -29,12 +29,13 @@ import throttle from 'lodash.throttle';
 
 //import controls of the player
 import VideoLib from '@vimeo/player';
+import Player from '@vimeo/player';
 
 //looking for existing player position on page
 const iframe = document.querySelector('iframe');
 
 //connect to existing player
-const player = new VideoLib(iframe);
+const player = new Player(iframe);
 
 //task for player start action
 const onPlay = function (data) {
@@ -46,7 +47,7 @@ player.on('timeupdate', throttle(onPlay, 1000));
 
 //reading playtime from localStorage every page reload
 const readPlayTime = loadFromStorage('videoplayer-current-time');
-
+console.log(readPlayTime)
 //setting PlayTime to the player
 player.setCurrentTime(readPlayTime).catch(function (error) {
   console.log(`videoplayer cath error: ${error.name}`);
