@@ -49,6 +49,6 @@ player.on('timeupdate', throttle(onPlay, 1000));
 const readPlayTime = loadFromStorage('videoplayer-current-time');
 console.log(readPlayTime)
 //setting PlayTime to the player
-player.setCurrentTime(readPlayTime).catch(function (error) {
+player.setCurrentTime(readPlayTime || 0).catch(function (error) {
   console.log(`videoplayer cath error: ${error.name}`);
 });

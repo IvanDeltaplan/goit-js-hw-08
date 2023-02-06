@@ -1,46 +1,51 @@
-const STORAGEFORM = 'feedback-form-state';
-import { saveToStorage, loadFromStorage } from './storage.js';
+//*===============================================================
+//* додаємо з бібліотеки lodash метод throttle
 import throttle from 'lodash.throttle';
-const feedbackForm = document.querySelector('.feedback-form');
-const dataHolder = {
-  email: '',
-  message: '',
-};
-function saveInput(event) {
-  dataHolder.email = event.currentTarget[0].value;
-  dataHolder.message = event.currentTarget[1].value;
-  const savedInput = saveToStorage(STORAGEFORM, dataHolder);
-  console.log
-}
-
-function onSubmit(submitObj) {
-  submitObj.preventDefault();
-  console.log(dataHolder);
-  formCleaner();
-  storageCleaner();
-}
-function formCleaner() {
-  feedbackForm[0].value = '';
-  feedbackForm[1].value = '';
-}
-function storageCleaner() {
-  localStorage.removeItem(STORAGEFORM);
-}
-feedbackForm.addEventListener('input', throttle(saveInput), 500);
-feedbackForm.addEventListener('submit', onSubmit);
-const retrivedData = loadFromStorage(STORAGEFORM);
-//console.log(retrivedData)
+//*===============================================================
+//* створюємо ключ для локального сховища
+const LOCAL_KEY = 'feedback-form-state';
 
 
-if (retrivedData === undefined) {
-  const savedInput = saveToStorage(STORAGEFORM, dataHolder);
-} 
-// else if (retrivedData.email === '' || retrivedData.message === '') {
-//   return;
-// }
- else {
-  feedbackForm[0].value = retrivedData.email;
-  feedbackForm[1].value = retrivedData.message;
+//!=================== варіант 2 робочий ==============================
+// * доступ до форми
+const form = document.querySelector('.feedback-form');
+// console.log(form);
+
+// * слухачі кнопки та інпутів
+form.addEventListener('submit', onFormSubmit);
+form.addEventListener('input', throttle(onFormInput, 500)); // ставимо час для обновлення рядків
+
+// * провіряємо після перезагрузки вікна чи є щось в локальному сховищі
+const dataFromLocalStorage = JSON.parse(localStorage.getItem(LOCAL_KEY));
+form.elements.email.value = dataFromLocalStorage?.email || '';
+form.elements.message.value = dataFromLocalStorage?.message || '';
+
+// * створюємо об'єкт
+const formData = {};
+// console.log(formData);
+
+// * блокуємо обновлення сторінки та ресетуємо інпути + локальне сховище
+function onFormSubmit(e) {
+  e.preventDefault();
+
+  const dataLocal = localStorage.getItem(LOCAL_KEY);
+  // console.log(dataLocal);
+
+  const autDataLocalStorage = JSON.parse(dataLocal);
+
+  localStorage.removeItem(LOCAL_KEY);
+  e.currentTarget.reset();
+  console.log(autDataLocalStorage);
 }
 
-//console.log(retrivedData.email) 
+// * виводимо значення з інпутів та записуємо в локальне сховище
+function onFormInput(e) {
+  formData[e.target.name] = e.target.value;
+
+  const dataFromLocalStorage = JSON.parse(localStorage.getItem(LOCAL_KEY));
+  localStorage.setItem(
+    LOCAL_KEY,
+    JSON.stringify({ ...dataFromLocalStorage, [e.target.name]: e.target.value })
+  );
+}
+
